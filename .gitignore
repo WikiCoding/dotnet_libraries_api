@@ -1,0 +1,12 @@
+.vs
+Books_API/bin
+Books_API/obj
+Library_Rest_API/bin
+Library_Rest_API/obj
+LibraryIntegrationTests/bin
+LibraryIntegrationTests/obj
+LibraryTest/bin
+LibraryTest/obj
+Reservation_API/bin
+Reservation_API/obj
+TestResults
