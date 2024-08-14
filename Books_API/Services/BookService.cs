@@ -1,9 +1,9 @@
 ﻿using Books_API.Dto;
 using Books_API.Exceptions;
+using Books_API.Infra;
 using Books_API.Model;
 using Books_API.Repository;
 using MongoDB.Bson;
-using System.Text.Json;
 
 namespace Books_API.Services
 {
@@ -12,11 +12,13 @@ namespace Books_API.Services
         private const string LIBRARY_SERVICE_BASE_URL = "http://localhost:5199/api/v1/libraries";
         private readonly IBookRepository _bookRepository;
         private readonly ILogger _logger;
+        private readonly Client _client;
 
-        public BookService(IBookRepository bookRepository, ILogger<BookService> logger)
+        public BookService(IBookRepository bookRepository, ILogger<BookService> logger, Client client)
         {
             _bookRepository = bookRepository;
             _logger = logger;
+            _client = client;
         }
 
         public async Task<BookDataModel> CreateBookService(string title, string libraryId)
@@ -58,25 +60,15 @@ namespace Books_API.Services
 
         private async Task ValidateLibraryIdExists(string libraryId)
         {
-            using (HttpClient client = new HttpClient())
+            LibrariesResponse? library = await _client.GetAsync(libraryId);
+
+            if (library == null)
             {
-                HttpResponseMessage res = await client.GetAsync($"{LIBRARY_SERVICE_BASE_URL}/{libraryId}");
-
-                if (!res.IsSuccessStatusCode)
-                {
-                    var statusCode = res.StatusCode;
-                    _logger.LogError("Error: {statusCode}", statusCode);
-                    throw new EntityNotFoundException("Library not found");
-                }
-
-                string resBody = await res.Content.ReadAsStringAsync();
-
-                LibrariesResponse? library = JsonSerializer.Deserialize<LibrariesResponse>(resBody);
-
-                if (library == null) throw new SerializerException("Problem Deserializing class");
-
-                _logger.LogInformation(message: "Library data was found an is avaliable: " + "id:" + library.Id + " name:" + library.Name);
+                _logger.LogError("Library not found");
+                throw new EntityNotFoundException("Library not found");
             }
+
+            _logger.LogInformation(message: "Library data was found an is avaliable: " + "id:" + library.Id + " name:" + library.Name);
         }
 
     }

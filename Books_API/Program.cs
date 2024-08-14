@@ -1,7 +1,11 @@
+using Books_API.Infra;
 using Books_API.Persistence;
 using Books_API.Repository;
 using Books_API.Services;
 using Microsoft.EntityFrameworkCore;
+using Steeltoe.Common.Http.Discovery;
+using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Consul;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +15,12 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddServiceDiscovery(o => o.UseConsul());
+
+builder.Services.AddHttpClient<Client>(client => client.BaseAddress = new Uri("http://library-service"))
+    .AddServiceDiscovery()
+    .AddRoundRobinLoadBalancer();
 
 builder.Services.AddScoped<IBookRepository, BookRepositoryImpl>();
 builder.Services.AddScoped<BookService>();

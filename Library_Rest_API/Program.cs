@@ -5,6 +5,8 @@ using Library_Rest_API.Persistence;
 using Library_Rest_API.Persistence.Repository;
 using Library_Rest_API.Services;
 using Microsoft.EntityFrameworkCore;
+using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Consul;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +29,8 @@ builder.Services.AddDbContext<LibraryDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("LibraryDb"));
 });
+
+builder.Services.AddServiceDiscovery(o => o.UseConsul());
 
 var app = builder.Build();
 

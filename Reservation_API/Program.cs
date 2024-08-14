@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Reservation_API.Repository;
 using Reservation_API.Services;
+using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Consul;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,8 @@ builder.Services.AddScoped<IReservationRepository, ReservationRepositoryImpl>();
 builder.Services.AddScoped<GetReservationsService>();
 
 builder.Services.AddHostedService<CreateReservationService>();
+
+builder.Services.AddServiceDiscovery(o => o.UseConsul());
 
 var app = builder.Build();
 
