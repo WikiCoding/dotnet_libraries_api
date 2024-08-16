@@ -1,0 +1,100 @@
+name: dockercompose10453046188690616833
+services:
+  books_api:
+    build:
+      context: C:\Users\tiago\Desktop\Tech_Programming\dotNet\Library_API_dotnet\Library_Api
+      dockerfile: Books_API/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+    image: booksapi
+    networks:
+      app-network: null
+    ports:
+    - mode: ingress
+      target: 8080
+      protocol: tcp
+  consul-server:
+    image: hashicorp/consul:latest
+    networks:
+      app-network: null
+    ports:
+    - mode: ingress
+      target: 8500
+      published: "8500"
+      protocol: tcp
+  gateway:
+    build:
+      context: C:\Users\tiago\Desktop\Tech_Programming\dotNet\Library_API_dotnet\Library_Api
+      dockerfile: Gateway/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+    image: gateway
+    networks:
+      app-network: null
+    ports:
+    - mode: ingress
+      target: 8080
+      protocol: tcp
+  library_rest_api:
+    build:
+      context: C:\Users\tiago\Desktop\Tech_Programming\dotNet\Library_API_dotnet\Library_Api
+      dockerfile: Library_Rest_API/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+    image: libraryrestapi
+    networks:
+      app-network: null
+    ports:
+    - mode: ingress
+      target: 8080
+      protocol: tcp
+  reservation_api:
+    build:
+      context: C:\Users\tiago\Desktop\Tech_Programming\dotNet\Library_API_dotnet\Library_Api
+      dockerfile: Reservation_API/Dockerfile
+    depends_on:
+      reservations_db:
+        condition: service_started
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+      ConnectionStrings__DefaultConnection: Host=reservations_db;Port=5432;Username=postgres;Password=postgres;Database=reservations
+    image: reservationapi
+    networks:
+      app-network: null
+    ports:
+    - mode: ingress
+      target: 8080
+      protocol: tcp
+    - mode: ingress
+      target: 8083
+      published: "8083"
+      protocol: tcp
+  reservations_db:
+    environment:
+      POSTGRES_DB: reservations
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    image: postgres:15
+    networks:
+      app-network: null
+    ports:
+    - mode: ingress
+      target: 5432
+      published: "5432"
+      protocol: tcp
+    volumes:
+    - type: volume
+      source: postgres_data
+      target: /var/lib/postgresql/data
+      volume: {}
+networks:
+  app-network:
+    name: dockercompose10453046188690616833_app-network
+    driver: bridge
+volumes:
+  postgres_data:
+    name: dockercompose10453046188690616833_postgres_data

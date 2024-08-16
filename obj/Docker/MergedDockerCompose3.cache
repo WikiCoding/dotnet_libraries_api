@@ -1,0 +1,61 @@
+name: dockercompose10453046188690616833
+services:
+  books_api:
+    build:
+      context: C:\Users\tiago\Desktop\Tech_Programming\dotNet\Library_API_dotnet\Library_Api
+      dockerfile: Books_API/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+    image: booksapi
+    networks:
+      default: null
+    ports:
+    - mode: ingress
+      target: 8080
+      protocol: tcp
+  gateway:
+    build:
+      context: C:\Users\tiago\Desktop\Tech_Programming\dotNet\Library_API_dotnet\Library_Api
+      dockerfile: Gateway/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+    image: gateway
+    networks:
+      default: null
+    ports:
+    - mode: ingress
+      target: 8080
+      protocol: tcp
+  library_rest_api:
+    build:
+      context: C:\Users\tiago\Desktop\Tech_Programming\dotNet\Library_API_dotnet\Library_Api
+      dockerfile: Library_Rest_API/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+    image: libraryrestapi
+    networks:
+      default: null
+    ports:
+    - mode: ingress
+      target: 8080
+      protocol: tcp
+  reservation_api:
+    build:
+      context: C:\Users\tiago\Desktop\Tech_Programming\dotNet\Library_API_dotnet\Library_Api
+      dockerfile: Reservation_API/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+    image: reservationapi
+    networks:
+      default: null
+    ports:
+    - mode: ingress
+      target: 8080
+      protocol: tcp
+networks:
+  default:
+    name: dockercompose10453046188690616833_default

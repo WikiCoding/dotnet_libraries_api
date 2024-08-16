@@ -10,3 +10,5 @@ LibraryTest/obj
 Reservation_API/bin
 Reservation_API/obj
 TestResults
+Gateway/bin
+Gateway/obj

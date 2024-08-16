@@ -1,0 +1,68 @@
+version: '3.4'
+
+services:
+  gateway:
+    image: ${DOCKER_REGISTRY-}gateway
+    build:
+      context: .
+      dockerfile: Gateway/Dockerfile
+    networks:
+      - app-network
+
+  consul-server:
+    image: hashicorp/consul:latest
+    ports:
+      - "8500:8500"
+    networks:
+      - app-network
+
+  books_api:
+    image: ${DOCKER_REGISTRY-}booksapi
+    build:
+      context: .
+      dockerfile: Books_API/Dockerfile
+    networks:
+      - app-network
+
+  library_rest_api:
+    image: ${DOCKER_REGISTRY-}libraryrestapi
+    build:
+      context: .
+      dockerfile: Library_Rest_API/Dockerfile
+    networks:
+      - app-network
+
+  reservation_api:
+    image: ${DOCKER_REGISTRY-}reservationapi
+    build:
+      context: .
+      dockerfile: Reservation_API/Dockerfile
+    environment:
+      - ASPNETCORE_HTTP_PORTS=8083
+      - ConnectionStrings__DefaultConnection=Host=reservations_db;Port=5432;Username=postgres;Password=postgres;Database=reservations
+    depends_on:
+      - reservations_db
+    ports:
+      - "8083:8083"
+    networks:
+      - app-network
+
+  reservations_db:
+    image: ${DOCKER_REGISTRY-}postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: reservations
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
