@@ -153,7 +153,8 @@ namespace Books_API.Controllers
         }
 
         [HttpPost("reservations")]
-        public async Task<IActionResult> CreateBookReservation([FromQuery(Name = "book-id")] string _id, [FromBody] ReservationReq reservationReq)
+        public async Task<IActionResult> CreateBookReservation([FromQuery(Name = "book-id")] string _id, 
+            [FromBody] ReservationReq reservationReq)
         {
             if (reservationReq.EndReservationDate < reservationReq.StartReservationDate) return BadRequest("End Date cannot be before Start Date");
             if (reservationReq.UserDetails!.Trim().Length == 0) return BadRequest("User Details are required");
